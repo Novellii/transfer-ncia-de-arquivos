@@ -1,0 +1,5 @@
+Por mais que, pela confirmação do professor, não haja nenhum problema na coluna Envio_ID o PostGrees o identifica 
+como um erro no momento de exportação do arquivo, o maior erro em si é o atributo composto endereço repartido em
+endereço_web, endereço_fisico e endereço_entrega, que abrange uma quantidade significativa de informações que 
+podem ser repartidas em até propriamente uma nova tabela, e não um VARCHAR de 255 caracteres. Não foi identificado
+nenhum erro em questão de cardinalidade, já em
