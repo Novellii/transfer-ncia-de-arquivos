@@ -8,7 +8,7 @@ DROP USER IF EXISTS Pedro;
 
 -- Cria um usuário Pedro com a permissão de criar Banco de Dados. --
 
-CREATE USER Pedro CREATEDB;
+CREATE USER Pedro CREATEDB INHERIT;
 
 -- Cria o Banco de Dados UVV com o proprietário Pedro, conforme as especificações do professor. -- 
 
@@ -20,18 +20,18 @@ CREATE database uvv
        lc_ctype 'pt_BR.UTF-8'
        allow_connections true;
 
- \c uvv;
+\c uvv;
 
 -- Cria o esquema lojas, que irá armazenar todas as tabelas necessitadas. --
 
-CREATE SCHEMA lojas;
+CREATE SCHEMA lojas AUTHORIZATION Pedro;
 
 -- Cria a tabela produtos, a partir do banco de dados uvv e o esquema lojas, com cometários. --
 
 CREATE TABLE    uvv.lojas.produtos (
-                produto_id                NUMERIC(38)  NOT NULL,
+                produto_id                NUMERIC(38)  NOT NULL check (produto_id > 0),
                 nome                      VARCHAR(255) NOT NULL,
-                preco_unitario            NUMERIC(10,2) ,
+                preco_unitario            NUMERIC(10,2) check (preco_unitario > 0),
                 detalhes                  BYTEA,
                 imagem                    BYTEA,
                 imagem_mime_type          VARCHAR(512),
@@ -40,6 +40,9 @@ CREATE TABLE    uvv.lojas.produtos (
                 imagem_ultima_atualizacao DATE,
                 CONSTRAINT pk_produto_id  PRIMARY KEY (produto_id)
 );
+
+-- Comentários sobre as colunas e a tabela produtos --
+
 COMMENT ON TABLE  uvv.lojas.produtos                           IS 'Esta é a tabela produtos com a Primary Key produto_id, faz uma relação 1:N com pedidos_itens e outra relação 1:N com estoques. Sendo pedidos_itens um relacionamento identificado e estoques um relacionamento não identificado.';
 COMMENT ON COLUMN uvv.lojas.produtos.produto_id                IS 'Esta é a PK produto_id que faz relação com a tabela pedidos_itens e a tabela estoques, só aceita números naturais. Não pode ser nula.';
 COMMENT ON COLUMN uvv.lojas.produtos.nome                      IS 'Essa é a coluna nome, ela deverá possuir apenas letras e nenhum número, sendo no máximo 255 caracteres. Não pode ser nula.';
@@ -49,16 +52,16 @@ COMMENT ON COLUMN uvv.lojas.produtos.imagem                    IS 'Esta é a col
 COMMENT ON COLUMN uvv.lojas.produtos.imagem_mime_type          IS 'Esta é a tabela imagem mime type, especifica o que o corpo do texto descreve, aceitando letras, números e simbolos de no máximo 512 caracteres.';
 COMMENT ON COLUMN uvv.lojas.produtos.imagem_arquivo            IS 'Esta é a coluna imagem arquivo, serve para registrar o arquivo da imagem de determinado produto, aceitando números, simbolos e letras de no máximo 512 caracteres.';
 COMMENT ON COLUMN uvv.lojas.produtos.imagem_charset            IS 'Esta é o Charset da imagem do produto, um sistema de codificação que faz os computadores reconhecerem um personagem, aceita letras, simbolos e números de no máximo 512 caracteres.';
-COMMENT ON COLUMN uvv.lojas.produtos.imagem_ultima_atualizacao IS 'Esta é a coluna contendo a data da última atualização da imagem do produto, aceitando apenas números naturais.';
+COMMENT ON COLUMN uvv.lojas.produtos.imagem_ultima_atualizacao IS 'Esta é a coluna contendo a data da última atualização da imagem do produto.';
 
 -- Cria a tabela lojas, a partir do banco de dados uvv e o esquema lojas, com cometários. --
 
 CREATE TABLE    uvv.lojas.lojas (
                 loja_id                   NUMERIC(38)  NOT NULL,
                 nome                      VARCHAR(255) NOT NULL,
-                endereco_web              VARCHAR(100),
-                endereco_fisico           VARCHAR(512),
-                latitude                  NUMERIC,
+                endereco_web              VARCHAR(100) CHECK (endereco_web IS NOT NULL OR endereco_fisico IS NOT NULL),
+                endereco_fisico           VARCHAR(512) CHECK (endereco_fisico IS NOT NULL OR endereco_web IS NOT NULL),
+                latitude                  NUMERIC, 
                 longitude                 NUMERIC,
                 logo BYTEA,
                 logo_mime_type            VARCHAR(512),
@@ -67,6 +70,9 @@ CREATE TABLE    uvv.lojas.lojas (
                 logo_ultima_atualizacao   DATE,
                 CONSTRAINT pk_loja_id     PRIMARY KEY (loja_id)
 );
+
+-- Comentários sobre as colunas e a tabela lojas --
+
 COMMENT ON TABLE  uvv.lojas.lojas                         IS 'Esta é a tabela lojas com a Primary Key loja_id, faz uma relação 1:N com pedidos, outra relação 1:N com estoques e outra relação 1:N com envios. Todos esses relacionamentos são não identificados.';
 COMMENT ON COLUMN uvv.lojas.lojas.loja_id                 IS 'Essa é a coluna loja_id, que serve de PK para a tabela pedidos, a tabela estoques e a tabela envios, deverá conter apenas números naturais de no máximo 38 caracteres. Não pode ser nula.';
 COMMENT ON COLUMN uvv.lojas.lojas.nome                    IS 'Essa é a coluna nome, ela deverá possuir apenas letras e nenhum número, sendo no máximo 255 caracteres e não pode ser nula.';
@@ -83,12 +89,16 @@ COMMENT ON COLUMN uvv.lojas.lojas.logo_ultima_atualizacao IS 'Esta é a coluna c
 -- Cria a tabela estoques, a partir do banco de dados uvv e o esquema lojas, com cometários. --
 
 CREATE TABLE    uvv.lojas.estoques (
-                estoque_id                NUMERIC(38) NOT NULL,
-                loja_id                   NUMERIC(38) NOT NULL,
-                produto_id                NUMERIC(38) NOT NULL,
-                quantidade                NUMERIC(38) NOT NULL,
+                estoque_id                NUMERIC(38) NOT NULL check (estoque_id > 0),
+                loja_id                   NUMERIC(38) NOT NULL check (loja_id > 0),
+                produto_id                NUMERIC(38) NOT NULL check (produto_id > 0),
+                quantidade                NUMERIC(38) NOT NULL check (quantidade > 0),
                 CONSTRAINT pk_estoque_id  PRIMARY KEY (estoque_id)
 );
+
+
+-- Comentários sobre as colunas e a tabela estoques --
+
 COMMENT ON TABLE  uvv.lojas.estoques           IS 'Esta é a tabela estoques com a Primary Key estoque_id, com uma Foreign Key loja_id e outra Foreign Key produto_id faz uma relação N:1 com produtos e outra relação N:1 com lojas.';
 COMMENT ON COLUMN uvv.lojas.estoques.estoque_id IS 'Esta é a PK estoque_id, deverá conter apenas números naturais de no máximo 38 caracteres Não pode ser nula.';
 COMMENT ON COLUMN uvv.lojas.estoques.loja_id    IS 'Esta é a coluna loja_id e é FK originada da tabela lojas, apenas aceita números naturais de no máximo 38 caracteres. Não pode ser nula.';
@@ -98,7 +108,7 @@ COMMENT ON COLUMN uvv.lojas.estoques.quantidade IS 'Esta é a coluna quantidade,
 -- Cria a tabela clientes, a partir do banco de dados uvv e o esquema lojas, com cometários. --
 
 CREATE TABLE    uvv.lojas.clientes (
-                cliente_id                NUMERIC(38)  NOT NULL,
+                cliente_id                NUMERIC(38)  NOT NULL check (cliente_id > 0),
                 email                     VARCHAR(255) NOT NULL,
                 nome                      VARCHAR(255) NOT NULL,
                 telefone1                 VARCHAR(20),
@@ -106,6 +116,9 @@ CREATE TABLE    uvv.lojas.clientes (
                 telefone3                 VARCHAR(20),
                 CONSTRAINT pk_cliente_id  PRIMARY KEY (cliente_id)
 );
+
+-- Comentários sobre as colunas e a tabela clientes --
+
 COMMENT ON TABLE  uvv.lojas.clientes            IS 'Esta é a tabela clientes com a Primary Key cliente_id. Faz uma relação 1:N entre as tabelas pedidos e outra relação 1:N com a tabela envios, ambos relacionamentos não identificados.';
 COMMENT ON COLUMN uvv.lojas.clientes.cliente_id IS 'Esta coluna representa o ID dos Clientes e é uma PK para a tabela pedidos e a tabela envios, só aceitando valores numéricos naturais de no máximo 38 caracteres. Não pode ser nula.';
 COMMENT ON COLUMN uvv.lojas.clientes.email      IS 'Esta é a coluna Email, ela poderá possuir letras, símbolos e números de no máximo 255 caracteres. Não pode ser nula.';
@@ -117,13 +130,16 @@ COMMENT ON COLUMN uvv.lojas.clientes.telefone3  IS 'Essa é a coluna telefone, q
 -- Cria a tabela envios, a partir do banco de dados uvv e o esquema lojas, com cometários. --
 
 CREATE TABLE    uvv.lojas.envios (
-                envio_id                  NUMERIC(38)  NOT NULL,
-                loja_id                   NUMERIC(38)  NOT NULL,
-                cliente_id                NUMERIC(38)  NOT NULL,
+                envio_id                  NUMERIC(38)  NOT NULL check (envio_id > 0),
+                loja_id                   NUMERIC(38)  NOT NULL check (loja_id > 0),
+                cliente_id                NUMERIC(38)  NOT NULL check (cliente_id > 0),
                 endereco_entrega          VARCHAR(512) NOT NULL,
-                status                    VARCHAR(15)  NOT NULL,
+                status                    VARCHAR(15)  NOT NULL CHECK (status in ('CRIADO','ENVIADO', 'TRANSITO', 'ENTREGUE')),
                 CONSTRAINT pk_envio_id    PRIMARY KEY  (envio_id)
 );
+
+-- Comentários sobre as colunas e a tabela envios --
+
 COMMENT ON TABLE uvv.lojas.envios                   IS 'Esta é a tabela envios com a Primary Key envio_id, Foreign Key loja_id e outra Foreign Key cliente_id, faz uma relação N:1 com clientes, uma relação N:1 com lojas, além de uma relação 0:N com pedidos_itens. Todos esses relacionamentos são não identificados.';
 COMMENT ON COLUMN uvv.lojas.envios.envio_id         IS 'Essa é a coluna envio_id, que serve de PK para a tabela pedidos_itens, deverá conter apenas números naturais de no máximo 38 caracteres. Não pode ser nula.';
 COMMENT ON COLUMN uvv.lojas.envios.loja_id          IS 'Esta é a coluna loja_id que é uma FK da tabela lojas, tendo no máximo 38 caracteres e podendo apenas ser números naturais. Não pode ser nula.';
@@ -134,13 +150,17 @@ COMMENT ON COLUMN uvv.lojas.envios.status           IS 'Esta é a coluna Status,
 -- Cria a tabela pedidos, a partir do banco de dados uvv e o esquema lojas, com cometários. --
 
 CREATE TABLE    uvv.lojas.pedidos (
-                pedido_id                 NUMERIC(38) NOT NULL,
+                pedido_id                 NUMERIC(38) NOT NULL check (pedido_id > 0),
                 data_hora                 TIMESTAMP   NOT NULL,
-                cliente_id                NUMERIC(38) NOT NULL,
-                status                    VARCHAR(15) NOT NULL,
-                loja_id                   NUMERIC(38) NOT NULL,
+                cliente_id                NUMERIC(38) NOT NULL check (cliente_id > 0),
+                status                    VARCHAR(15) NOT NULL CHECK (status in ('CANCELADO','COMPLETO','ABERTO','PAGO','REEMBOLSADO','ENVIADO')),
+                loja_id                   NUMERIC(38) NOT NULL check (loja_id > 0),
                 CONSTRAINT pk_pedido_id   PRIMARY KEY (pedido_id)
 );
+
+
+-- Comentários sobre as colunas e a tabela pedidos --
+
 COMMENT ON TABLE  uvv.lojas.pedidos            IS 'Esta é a tabela pedidos com a Primary Key pedido_id, uma Foreign Key cliente_id e outra Foreign Key loja_id. Faz uma relação N:1 com a tabela clientes, outra relação N:1 com a tabela lojas e 1:N com a tabela pedidos_itens, sendo que os relacionamentos entre clientes e lojas são não identificados e pedidos itens é um relacionamento identificado.';
 COMMENT ON COLUMN uvv.lojas.pedidos.pedido_id  IS 'Esta é a coluna pedido_id, é uma PK e faz um relacionamento  com a tabela pedidos_itens, sendo no máximo 38 caracteres. Não pode ser nulo.';
 COMMENT ON COLUMN uvv.lojas.pedidos.data_hora  IS 'Esta é a coluna data e hora, serve para registar a data e a hora dos produtos, contendo apenas números naturais. Não pode ser nula.';
@@ -151,14 +171,17 @@ COMMENT ON COLUMN uvv.lojas.pedidos.loja_id    IS 'Esta é a coluna loja_id e po
 -- Cria a útima tabela pedidos_itens, a partir do banco de dados uvv e o esquema lojas, com cometários. --
 
 CREATE TABLE    uvv.lojas.pedidos_itens (
-                pedido_id                      NUMERIC(38)   NOT NULL,
-                produto_id                     NUMERIC(38)   NOT NULL,
-                numero_da_linha                NUMERIC(38)   NOT NULL,
-                preco_unitario                 NUMERIC(10,2) NOT NULL,
-                quantidade                     NUMERIC(38)   NOT NULL,
-                envio_id                       NUMERIC(38),
+                pedido_id                      NUMERIC(38)   NOT NULL check (pedido_id > 0),
+                produto_id                     NUMERIC(38)   NOT NULL check (produto_id > 0),
+                numero_da_linha                NUMERIC(38)   NOT NULL check (numero_da_linha > 0),
+                preco_unitario                 NUMERIC(10,2) NOT NULL check (preco_unitario > 0),
+                quantidade                     NUMERIC(38)   NOT NULL check (quantidade > 0),
+                envio_id                       NUMERIC(38)            check (envio_id > 0),
                 CONSTRAINT pk_pedidoproduto_id PRIMARY KEY   (pedido_id, produto_id)
 );
+
+-- Comentários sobre as colunas e a tabela pedidos_itens --
+
 COMMENT ON TABLE  uvv.lojas.pedidos_itens                 IS 'Esta é a tabela pedidos_itens com a Primary Key e Foreign Key pedido_id, derivada da tabela pedidos, outra Primary Key e Foreign Key produto_id, derivada da tabela produtos, uma Foreign Key envio_id. Faz uma relação N:1 com a tabela pedidos, outra relação N:1 com produtos, e uma relação N:0 com a tabela envios, sendo produtos e pedidos relacionamentos identificados enquanto o relacionamento com envios é não identificado.';
 COMMENT ON COLUMN uvv.lojas.pedidos_itens.pedido_id       IS 'Essa é a coluna pedido_id que é uma PFK originada de um relacionamento identificado da coluna pedidos, só aceita números naturais e não pode ser nula.';
 COMMENT ON COLUMN uvv.lojas.pedidos_itens.produto_id      IS 'Essa é a coluna produto_id que é uma PFK originada de um relacionamento identificado da coluna produtos, só aceita números naturais. Não pode ser nula.';
