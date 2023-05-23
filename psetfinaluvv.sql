@@ -46,7 +46,7 @@ CREATE TABLE    produtos (
 COMMENT ON TABLE  produtos                           IS 'Esta é a tabela produtos com a Primary Key produto_id, faz uma relação 1:N com pedidos_itens e outra relação 1:N com estoques. Sendo pedidos_itens um relacionamento identificado e estoques um relacionamento não identificado.';
 COMMENT ON COLUMN produtos.produto_id                IS 'Esta é a PK produto_id que faz relação com a tabela pedidos_itens e a tabela estoques, só aceita números naturais. Não pode ser nula.';
 COMMENT ON COLUMN produtos.nome                      IS 'Essa é a coluna nome, ela deverá possuir apenas letras e nenhum número, sendo no máximo 255 caracteres. Não pode ser nula.';
-COMMENT ON COLUMN produtos.preco_unitario             IS 'Esta é a coluna preço unitário e só aceita números naturais de no máximo 10 caracteres, sendo que o penúltimo e o último caractere ficarão após a vírgula.';
+COMMENT ON COLUMN produtos.preco_unitario            IS 'Esta é a coluna preço unitário e só aceita números naturais de no máximo 10 caracteres, sendo que o penúltimo e o último caractere ficarão após a vírgula.';
 COMMENT ON COLUMN produtos.detalhes                  IS 'Esta é a coluna detalhes, para armazenar a detalhes sobre produtos.';
 COMMENT ON COLUMN produtos.imagem                    IS 'Esta é a coluna imagem, para armazenar a imagem do produto.';
 COMMENT ON COLUMN produtos.imagem_mime_type          IS 'Esta é a tabela imagem mime type, especifica o que o corpo do texto descreve, aceitando letras, números e simbolos de no máximo 512 caracteres.';
@@ -99,7 +99,7 @@ CREATE TABLE    estoques (
 
 -- Comentários sobre as colunas e a tabela estoques --
 
-COMMENT ON TABLE  estoques           IS 'Esta é a tabela estoques com a Primary Key estoque_id, com uma Foreign Key loja_id e outra Foreign Key produto_id faz uma relação N:1 com produtos e outra relação N:1 com lojas.';
+COMMENT ON TABLE  estoques            IS 'Esta é a tabela estoques com a Primary Key estoque_id, com uma Foreign Key loja_id e outra Foreign Key produto_id faz uma relação N:1 com produtos e outra relação N:1 com lojas.';
 COMMENT ON COLUMN estoques.estoque_id IS 'Esta é a PK estoque_id, deverá conter apenas números naturais de no máximo 38 caracteres Não pode ser nula.';
 COMMENT ON COLUMN estoques.loja_id    IS 'Esta é a coluna loja_id e é FK originada da tabela lojas, apenas aceita números naturais de no máximo 38 caracteres. Não pode ser nula.';
 COMMENT ON COLUMN estoques.produto_id IS 'Esta é a coluna produto_id e é FK da tabela produtos, só aceita números naturais de no máximo 38 caracteres. Não pode ser nula.';
@@ -135,7 +135,7 @@ CREATE TABLE    envios (
                 cliente_id                NUMERIC(38)  NOT NULL check (cliente_id > 0),
                 endereco_entrega          VARCHAR(512) NOT NULL,
                 status                    VARCHAR(15)  NOT NULL CHECK (status in ('CRIADO','ENVIADO', 'TRANSITO', 'ENTREGUE')),
-                CONSTRAINT pk_envio_id    PRIMARY KEY  (envio_id)
+                CONSTRAINT pk_envio_id    PRIMARY KEY                 (envio_id)
 );
 
 -- Comentários sobre as colunas e a tabela envios --
@@ -155,7 +155,7 @@ CREATE TABLE    pedidos (
                 cliente_id                NUMERIC(38) NOT NULL check (cliente_id > 0),
                 status                    VARCHAR(15) NOT NULL CHECK (status in ('CANCELADO','COMPLETO','ABERTO','PAGO','REEMBOLSADO','ENVIADO')),
                 loja_id                   NUMERIC(38) NOT NULL check (loja_id > 0),
-                CONSTRAINT pk_pedido_id   PRIMARY KEY (pedido_id)
+                CONSTRAINT pk_pedido_id   PRIMARY KEY                (pedido_id)
 );
 
 
@@ -177,7 +177,7 @@ CREATE TABLE    pedidos_itens (
                 preco_unitario                 NUMERIC(10,2) NOT NULL check (preco_unitario > 0),
                 quantidade                     NUMERIC(38)   NOT NULL check (quantidade > 0),
                 envio_id                       NUMERIC(38)            check (envio_id > 0),
-                CONSTRAINT pk_pedidoproduto_id PRIMARY KEY   (pedido_id, produto_id)
+                CONSTRAINT pk_pedidoproduto_id PRIMARY KEY                  (pedido_id, produto_id)
 );
 
 -- Comentários sobre as colunas e a tabela pedidos_itens --
@@ -194,7 +194,7 @@ COMMENT ON COLUMN pedidos_itens.envio_id        IS 'Esta é a coluna envio id e 
 
 ALTER TABLE estoques    ADD CONSTRAINT produtos_estoques_fk
 FOREIGN KEY                         (produto_id)
-REFERENCES produtos       (produto_id)
+REFERENCES produtos                 (produto_id)
 ON DELETE NO ACTION
 ON UPDATE NO ACTION
 NOT DEFERRABLE;
@@ -203,7 +203,7 @@ NOT DEFERRABLE;
 
 ALTER TABLE pedidos_itens ADD CONSTRAINT produtos_pedidos_itens_fk
 FOREIGN KEY                         (produto_id)
-REFERENCES produtos  (produto_id)
+REFERENCES produtos                 (produto_id)
 ON DELETE NO ACTION
 ON UPDATE NO ACTION
 NOT DEFERRABLE;
@@ -212,7 +212,7 @@ NOT DEFERRABLE;
 
 ALTER TABLE pedidos       ADD CONSTRAINT lojas_pedidos_fk
 FOREIGN KEY                                        (loja_id)
-REFERENCES lojas   (loja_id)
+REFERENCES lojas                                   (loja_id)
 ON DELETE NO ACTION
 ON UPDATE NO ACTION
 NOT DEFERRABLE;
@@ -221,7 +221,7 @@ NOT DEFERRABLE;
 
 ALTER TABLE estoques    ADD CONSTRAINT lojas_estoques_fk
 FOREIGN KEY                                        (loja_id)
-REFERENCES                       lojas   (loja_id)
+REFERENCES lojas                                   (loja_id)
 ON DELETE NO ACTION
 ON UPDATE NO ACTION
 NOT DEFERRABLE;
@@ -230,7 +230,7 @@ NOT DEFERRABLE;
 
 ALTER TABLE envios        ADD CONSTRAINT lojas_envios_fk
 FOREIGN KEY                                        (loja_id)
-REFERENCES                       lojas   (loja_id)
+REFERENCES lojas                                   (loja_id)
 ON DELETE NO ACTION
 ON UPDATE NO ACTION
 NOT DEFERRABLE;
@@ -239,7 +239,7 @@ NOT DEFERRABLE;
 
 ALTER TABLE pedidos       ADD CONSTRAINT  clientes_pedidos_fk
 FOREIGN KEY                                         (cliente_id)
-REFERENCES                       clientes (cliente_id)
+REFERENCES clientes                                 (cliente_id)
 ON DELETE NO ACTION
 ON UPDATE NO ACTION
 NOT DEFERRABLE;
@@ -248,7 +248,7 @@ NOT DEFERRABLE;
 
 ALTER TABLE envios        ADD CONSTRAINT  clientes_envios_fk
 FOREIGN KEY                                     (cliente_id)
-REFERENCES                       clientes (cliente_id)
+REFERENCES clientes                             (cliente_id)
 ON DELETE NO ACTION
 ON UPDATE NO ACTION
 NOT DEFERRABLE;
@@ -257,7 +257,7 @@ NOT DEFERRABLE;
 
 ALTER TABLE pedidos_itens ADD CONSTRAINT envios_pedidos_itens_fk
 FOREIGN KEY                                        (envio_id)
-REFERENCES                       envios  (envio_id)
+REFERENCES envios                                  (envio_id)
 ON DELETE NO ACTION
 ON UPDATE NO ACTION
 NOT DEFERRABLE;
@@ -266,7 +266,7 @@ NOT DEFERRABLE;
 
 ALTER TABLE pedidos_itens ADD CONSTRAINT pedidos_pedidos_itens_fk
 FOREIGN KEY                                           (pedido_id)
-REFERENCES                          pedidos (pedido_id)
+REFERENCES pedidos                                    (pedido_id)
 ON DELETE NO ACTION
 ON UPDATE NO ACTION
 NOT DEFERRABLE;
