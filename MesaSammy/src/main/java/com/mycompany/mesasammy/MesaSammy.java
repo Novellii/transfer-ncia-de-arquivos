@@ -5,17 +5,18 @@ public class MesaSammy {
 
     public static void main(String[] args) {
         Computador computadorSammy = new Computador("GTX 1050Ti", "8 GB RAM", "I5-3470");
+        Computador computadorAlanzoka = new Computador("Asus ROG Strix White 3090 OC","32 GB de RAM","i9 9900K");
         ControleXbox controleSammy = new ControleXbox();
         FoneOuvido foneOuvidoSammy = new FoneOuvido();
-        computadorSammy.controlexbox = controleSammy;
-        computadorSammy.foneouvido = foneOuvidoSammy;
         
-        computadorSammy.fonteAlimentacao.Tensao = 122;
-        
+        computadorSammy.setControleXbox(controleSammy);
+        computadorSammy.setFoneOuvido(foneOuvidoSammy);
+        computadorSammy.setTensao(100);
+               
         System.out.println("O processador da Sammy é "+ computadorSammy.getProcessador());
         System.out.println(computadorSammy.getControleXbox());
         System.out.println(computadorSammy.getFoneOuvido());
-        System.out.println("A tensão da fonte é de "+ computadorSammy.fonteAlimentacao.Tensao + " Volts");
+        System.out.println("A tensão da fonte é de "+ computadorSammy.getTensao() + " Volts");
     
         PlaystationPortatil PSP = new PlaystationPortatil();
         
@@ -48,12 +49,20 @@ public class MesaSammy {
         }
         
         System.out.println("O tamanho da lista é de: " + PSP.JogosPsP.size());       
-        // Não consegui entender o "c2.deposita(200);"
-        
-        PSP.CodigoJogos.put("828862300010", "Slug Anthology");
+                
+        PSP.CodigoJogos.put("828862300010", "Metal Slug Anthology");
         PSP.CodigoJogos.put("4988602607291", "Dracula X Chronicles");
         PSP.CodigoJogos.put("13388260041","Dante's Inferno");
         
         System.out.println(PSP.CodigoJogos.get("13388260041"));
+        
+        // O tal "c2.deposita(200);"
+        
+        Map<String, Computador> ListaComputadores = new HashMap<>();
+        ListaComputadores.put("ComputadorAlan" , computadorAlanzoka);
+        ListaComputadores.put("ComputadorSam" , computadorSammy);
+        
+        
+        System.out.println(ListaComputadores.get("ComputadorAlan"));
     }
 }

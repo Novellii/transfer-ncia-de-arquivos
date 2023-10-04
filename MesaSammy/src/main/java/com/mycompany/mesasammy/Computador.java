@@ -1,9 +1,9 @@
 package com.mycompany.mesasammy;
 
 public class Computador {
-    public FoneOuvido foneouvido;  // Perguntar se é para deixar public ou private
-    public ControleXbox controlexbox; // Perguntar se é para deixar public ou private
-    public FonteAlimentacao fonteAlimentacao;
+    private FonteAlimentacao fonteAlimentacao;
+    private FoneOuvido foneouvido;  // Perguntar se é para deixar public ou private
+    private ControleXbox controlexbox; // Perguntar se é para deixar public ou private
     private String placaDeVideo;
     private String memoriaRam;
     private String processador;
@@ -12,7 +12,31 @@ public class Computador {
         this.placaDeVideo = placaDeVideo;
         this.memoriaRam = memoriaRam;
         this.processador = processador;
-        this.fonteAlimentacao = new FonteAlimentacao();
+        this.fonteAlimentacao = new FonteAlimentacao(0, 0, "Vazio");
+    }
+       
+    public int getTensao() {
+        return fonteAlimentacao.getTensao();
+    }
+    
+    public void setTensao(int Tensao){
+        fonteAlimentacao.setTensao(Tensao);
+    }
+
+    public int getCarga() {
+        return fonteAlimentacao.getCarga();
+    }
+
+    public void setCarga(int Carga) {
+        fonteAlimentacao.setCarga(Carga);
+    }
+
+    public String getPadraoUtilizado() {
+        return fonteAlimentacao.getPadraoUtilizado();
+    }
+
+    public void setPadraoUtilizado(String PadraoUtilizado) {
+        fonteAlimentacao.setPadraoUtilizado(PadraoUtilizado);
     }
     
     public void setFonteAlimentacao(FonteAlimentacao fonteComputador){
