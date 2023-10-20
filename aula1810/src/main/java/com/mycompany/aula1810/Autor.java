@@ -9,11 +9,11 @@ public class Autor {
     public Autor(String nome, String abreviatura) {
         this.nome = nome;
         this.abreviatura = abreviatura;
-        this.contatos = new ArrayList<Contato>();
+        this.contatos = new ArrayList<>();
     }
 
-    public void adicionarContato(String t, String c){
-        Contato contatoTemporario = new Contato(t, c);
+    public void adicionarContato(String c, String t){
+        Contato contatoTemporario = new Contato(c, t, this);
         this.contatos.add(contatoTemporario);
     }
     

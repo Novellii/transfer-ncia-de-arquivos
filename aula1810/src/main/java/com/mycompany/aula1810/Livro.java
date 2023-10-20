@@ -6,6 +6,8 @@ public class Livro {
     private int anoPublicacao;
     private Editora edt;
     private List<Autor> autores;
+    
+    // Fazer a relação de livro e autor.
 
     public Livro(String titulo, int anoPublicacao, Editora edt){
         this.titulo = titulo;
