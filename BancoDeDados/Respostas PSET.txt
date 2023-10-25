@@ -1,0 +1,28 @@
+Por mais que, pela confirmação do professor, não haja nenhum problema na coluna Envio_ID da tabela pedidos_itens o 
+PostGrees o identifica como um erro no momento de exportação do arquivo, o maior erro em si é o atributo composto
+endereço repartido em endereço_web, endereço_fisico e endereço_entrega, que abrange uma quantidade significativa 
+de informações que podem ser repartidas em até propriamente uma nova tabela, e não um VARCHAR de 255 caracteres. 
+Além de um atributo multivalorado de telefone que foi repartido em 3 tipos de telefones. Não foi identificado 
+nenhum erro em questão de cardinalidade,
+
+Lojas e Produtos fazem um relacionamento N:N a partir da tabela estoques
+Produtos e Pedidos fazem um relacionamento N:N através da tabela pedidos_itens
+Envios e Produtos, além de envios e pedidos também fazem um relacionamento N:N
+ambos através da tabela pedidos_itens
+Lojas e Clientes fazem um relacionamento N:N tanto pela tabela envios quanto
+pela tabela pedidos.
+
+Está certo, já que o número da linha não é derivado de um relacionamento identificado
+da tabela produtos e pedidos, ao contrário das chaves compostas pedido_id e produto_id
+que são originadas, respectivamente, da tabela pedidos e da tabela produtos, não, afinal
+não, já que o pedido_id e o produto_id já estão cumprindo a funcionalidade de primary
+key desta tabela.
+
+Porque essas duas possuem chaves primárias definidas como identificadores exclusivos.
+Na tabela pedidos há uma coluna pedido_id que referencia como chave primária para a 
+tabela pedidos_itens, criando uma chave estrangeira derivada desta tabela, o mesmo
+ocorre com a tabela produtos e pedidos itens, onde produtos tem uma chave primária
+que referencia uma chave estrangeira para a tabela pedidos_itens. A relação com
+a chave estrangeira envio_id pode ocorrer quando não é necessário estabeler uma 
+relação direta com envios e pedidos_itens, já produtos e pedidos, precisam de
+uma relação direta N:N através da tabela pedidos itens.
