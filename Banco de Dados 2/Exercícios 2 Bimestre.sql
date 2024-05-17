@@ -38,3 +38,11 @@ from product p left join account a
 using(product_cd)
 group by p.name
 order by 3 DESC;
+
+delimiter $$
+create procedure 
+render(IN taxa decimal(3,2))
+begin
+update account
+set avail_balance = avail_balance + avail_balance * 0.01 * taxa;
+end $$
